@@ -1,5 +1,6 @@
 const moment = require('moment');
 const ProtoBuf = require('protobufjs');
+const request = require('request-promise');
 
 const getFeeds = (apiKey, nextFunc) => {
   for(var feedId of [1, 26, 16, 21, 2, 11, 31, 36, 51]) {
