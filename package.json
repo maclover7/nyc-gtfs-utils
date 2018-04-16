@@ -1,6 +1,6 @@
 {
   "name": "nyc-gtfs-utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "index.js",
   "repository": "git@github.com:maclover7/nyc-gtfs-utils.git",
   "author": "Jon Moss <me@jonathanmoss.me>",
