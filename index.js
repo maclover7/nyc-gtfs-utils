@@ -3,7 +3,7 @@ const ProtoBuf = require('protobufjs');
 
 const loadProtobufAssets = () => {
   return ProtoBuf
-    .load("nyct-subway.proto")
+    .load(`${require.resolve('nyc-gtfs-utils').split('index.js')[0]}nyct-subway.proto`)
     .then((root) => {
       return new Promise((resolve, reject) => {
         resolve([
