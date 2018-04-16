@@ -1,6 +1,15 @@
 const moment = require('moment');
 const ProtoBuf = require('protobufjs');
 
+const getFeeds = (apiKey, nextFunc) => {
+  for(var feedId of [1, 26, 16, 21, 2, 11, 31, 36, 51]) {
+    request({
+      url: `http://datamine.mta.info/mta_esi.php?key=${apiKey}&feed_id=${feedId}`,
+      encoding: null
+    }).then(nextFunc);
+  }
+};
+
 const loadProtobufAssets = () => {
   return ProtoBuf
     .load(`${require.resolve('nyc-gtfs-utils').split('index.js')[0]}nyct-subway.proto`)
@@ -59,6 +68,7 @@ const processProtobuf = (feedMessage, directionMap, body, onEntity, onStopTimeUp
 };
 
 module.exports = {
+  getFeeds,
   loadProtobufAssets,
   processProtobuf
 };
