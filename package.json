@@ -1,0 +1,12 @@
+{
+  "name": "nyc-gtfs-utils",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "git@github.com:maclover7/nyc-gtfs-utils.git",
+  "author": "Jon Moss <me@jonathanmoss.me>",
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.22.1",
+    "protobufjs": "^6.8.6"
+  }
+}
