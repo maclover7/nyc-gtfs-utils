@@ -28,43 +28,47 @@ const loadProtobufAssets = () => {
 };
 
 const processProtobuf = (feedMessage, directionMap, body, onEntity, onStopTimeUpdate) => {
+  var trainDb = {};
+
   return new Promise((resolve, reject) => {
-    var trainDb = {};
-    var msg;
-
     try {
-      msg = feedMessage.decode(body);
+      var msg = feedMessage.decode(body);
     } catch (e) {
-      console.error(e);
-      return;
+      reject(e);
     }
+    resolve(msg);
+  })
+  .then((msg) => {
+    return msg.entity.map((entity) => {
+       if (!entity.tripUpdate) return Promise.resolve();
+       var nyctDescriptor = entity.tripUpdate.trip['.nyctTripDescriptor'];
 
-    msg.entity.forEach((entity) => {
-      if (!entity.tripUpdate) return;
-      var nyctDescriptor = entity.tripUpdate.trip['.nyctTripDescriptor'];
-      onEntity(nyctDescriptor);
+       onEntity(nyctDescriptor)
+       .then(() => {
+         return entity.tripUpdate.stopTimeUpdate.map((stopTimeUpdate) => {
+           var stopId = stopTimeUpdate.stopId.slice(0, -1);
+           var time;
 
-      entity.tripUpdate.stopTimeUpdate.forEach((stopTimeUpdate) => {
-        var time;
+           if (stopTimeUpdate.arrival && stopTimeUpdate.arrival.time) {
+             time = stopTimeUpdate.arrival.time.low;
+           } else if (stopTimeUpdate.departure && stopTimeUpdate.departure.time) {
+             time = stopTimeUpdate.departure.time.low;
+           } else {
+             time = '';
+           }
 
-        if (stopTimeUpdate.arrival && stopTimeUpdate.arrival.time) {
-          time = stopTimeUpdate.arrival.time.low;
-        } else if (stopTimeUpdate.departure && stopTimeUpdate.departure.time) {
-          time = stopTimeUpdate.departure.time.low;
-        } else {
-          time = '';
-        }
-
-        onStopTimeUpdate({
-          direction: directionMap[nyctDescriptor.direction],
-          stopId: stopTimeUpdate.stopId.slice(0, -1),
-          time: moment.unix(time),
-          trainId: nyctDescriptor.trainId
-        });
-      });
+           return onStopTimeUpdate({
+             direction: directionMap[nyctDescriptor.direction],
+             stopId: stopTimeUpdate.stopId.slice(0, -1),
+             time: moment.unix(time),
+             trainId: nyctDescriptor.trainId
+           });
+         });
+       });
     });
-
-    resolve();
+  })
+  .catch((e) => {
+    console.error(e);
   });
 };
 
