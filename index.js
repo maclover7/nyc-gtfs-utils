@@ -43,7 +43,10 @@ const processProtobuf = (feedMessage, directionMap, body, onEntity, onStopTimeUp
        if (!entity.tripUpdate) return Promise.resolve();
        var nyctDescriptor = entity.tripUpdate.trip['.nyctTripDescriptor'];
 
-       onEntity(nyctDescriptor)
+       onEntity({
+         trainId: nyctDescriptor.trainId,
+         direction: directionMap[nyctDescriptor.direction]
+       })
        .then(() => {
          return entity.tripUpdate.stopTimeUpdate.map((stopTimeUpdate) => {
            var stopId = stopTimeUpdate.stopId.slice(0, -1);
